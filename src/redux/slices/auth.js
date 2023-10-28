@@ -1,0 +1,77 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "../../utils/axios";
+
+export const fetchAuth = createAsyncThunk(
+    "auth/fetchAuth", async (params) => {
+        const { data } = await axios.post('/auth/login', params);
+        return data;
+    });
+
+export const fetchAuthMe = createAsyncThunk(
+    "auth/fetchAuthMe", async (params) => {
+        const { data } = await axios.get('/auth/me');
+        return data;
+    });
+
+export const fetchRegister = createAsyncThunk(
+    "auth/fetchRegister", async (params) => {
+        const { data } = await axios.post('/auth/register', params);
+        console.log(data);
+        return data;
+    });
+
+
+const initialState = {
+    data: null,
+    status: 'idle'
+};
+
+const auth = createSlice({
+    name: "auth",
+    initialState,
+    reducers: {
+        logout: (state) => {
+            state.data = null;
+            state.status = "idle"
+        }
+    },
+    extraReducers: {
+        [fetchAuth.pending]: (state, action) => {
+            state.status = "loading";
+            state.data = null;
+        },
+        [fetchAuth.fulfilled]: (state, action) => {
+            state.data = action.payload;
+            state.status = "loaded";
+        },
+        [fetchAuth.rejected]: (state) => {
+            state.status = "error";
+        },
+        [fetchAuthMe.pending]: (state, action) => {
+            state.status = "loading";
+            state.data = null;
+        },
+        [fetchAuthMe.fulfilled]: (state, action) => {
+            state.data = action.payload;
+            state.status = "loaded";
+        },
+        [fetchAuthMe.rejected]: (state) => {
+            state.status = "error";
+        },
+        [fetchRegister.pending]: (state, action) => {
+            state.status = "loading";
+            state.data = null;
+        },
+        [fetchRegister.fulfilled]: (state, action) => {
+            state.data = action.payload;
+            state.status = "loaded";
+        },
+        [fetchRegister.rejected]: (state) => {
+            state.status = "error";
+        },
+    }
+});
+
+export const authReducer = auth.reducer;
+
+export const {logout} = auth.actions;
